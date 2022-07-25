@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>WebSocket - Javascript</title>
+</head>
+
+<body>
+	
+	<div style="width: 100%">
+		IP: <input type="text" id="ip" value="192.168.0.110">
+		<button id="connect" onclick="Conectar()">Conectar</button>
+		
+		<p>TXT : <span id="TXTstr">%STATE%</span></p>
+		<!--
+		<button onclick="limpar()" width="20">Limpar/parar tudo</button>
+		<br>
+		<button onclick="controlador()" width=20>Ligar Controlador</button>
+		<br>
+		<button onclick="max_speed()" width=20>Vel. Máxima</button>
+		<br>
+		<button onclick="min_speed()" width=20>Vel. Mínima</button>
+		<br>
+		<button onclick="io_on()" width="20">Ligar I/Os</button>
+		<br>
+		<button onclick="io_off()" width="20">Desligar I/Os</button>
+	-->
+	</div>
+	
+	
+	<br>
+	
+	<div style="width: 100%">
+		<form name="form">
+		<label>Cmd  :
+		  <input name="cmd" type="text" value="g"/>
+		</label>
+		<br>
+		<label>Par. 1:
+		  <input name="par1" type="text" value="1"/>
+		</label>
+		<br>
+		<label>Par. 2:
+		  <input name="par2" type="text" value="50"/>
+		</label>
+		<br>
+		<label>Par. 3:
+			<input name="par3" type="text" value="50"/>
+		  </label>
+		  <br>
+		<input type="submit" name="enviar_cmd" value="Enviar" />
+		</form>
+	</div>
+	<br>
+	<p id="demo">String para testes Javascript</p>
+	
+	<script type="text/javascript">
+		var ws;
+
+		function WebSocketInit() {
+			var ws_ip = document.getElementById("ip").value;
+
+			if ('WebSocket' in window) {
+				//alert('WebSocket is supported by your Browser!');
+
+				// Let us open a web socket
+				ws = new WebSocket('ws://' + ws_ip + ':81');
+
+				ws.onopen = function () {
+
+				};
+
+				ws.onmessage = function (evt) {
+					var received_msg = evt.data;
+					document.getElementById('TXTstr').innerHTML = received_msg;
+				};
+
+				ws.onclose = function () {
+
+				};
+			}
+			else {
+				// The browser doesn't support WebSocket
+				alert("WebSocket NOT supported by your Browser!");
+			}
+		}
+
+		function Conectar() {
+			if (document.getElementById('connect').innerHTML == "Conectar") {
+				WebSocketInit();
+				document.getElementById('connect').innerHTML = "Desconectar";
+			}
+			else {
+				ws.close()
+				document.getElementById('connect').innerHTML = "Conectar";
+			}
+		}
+
+		function limpar() {
+			// Sleep in loop
+			ws.send('a');
+		}
+
+		function max_speed() {
+			// Sleep in loop
+			ws.send('b');
+		}
+
+		function min_speed() {
+			// Sleep in loop
+			ws.send('c');
+		}
+
+		function controlador() {
+			// Sleep in loop
+			ws.send('g');
+		}
+
+		function io_on() {
+			// Sleep in loop
+			ws.send('o');
+		}
+
+		function io_off() {
+			// Sleep in loop
+			ws.send('p');
+		}
+		
+		function enviar_cmd(event){
+			event.preventDefault();
+		  
+			const data = new FormData(event.target);
+			  
+			const formJSON = Object.fromEntries(data.entries());
+			  
+			const strJSON = JSON.stringify(formJSON);
+			  
+			document.getElementById("demo").innerHTML = strJSON;
+
+			ws.send(strJSON);
+		}
+
+		const form = document.querySelector('form');
+		form.addEventListener('submit', enviar_cmd);
+	</script>
+	
+	
+</body>
+
+</html>
